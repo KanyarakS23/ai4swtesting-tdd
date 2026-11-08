@@ -1,20 +1,45 @@
+const TIME_UNIT_HOURS = 0.5;
+
 class Timesheet {
-  timesheets = new Map();
+  #timesheets = new Map();
 
   submitTimesheet(projectName, duration) {
-    if (this.timesheets.has(projectName)) {
-      duration += this.timesheets.get(projectName);
+    const name = Timesheet.#normaliseProjectName(projectName);
+    if (name === null || !Timesheet.#isValidDuration(duration)) {
+      return false;
     }
-    this.timesheets.set(projectName, duration);
+    const current = this.#timesheets.get(name) ?? 0;
+    this.#timesheets.set(name, current + duration);
     return true;
   }
 
   getTimesheets() {
-    return [...this.timesheets.values()];
+    return [...this.#timesheets.values()];
   }
 
   getTotalTimesheetHours(projectName) {
-    return this.timesheets.get(projectName);
+    const name = Timesheet.#normaliseProjectName(projectName);
+    if (name === null) {
+      return 0;
+    }
+    return this.#timesheets.get(name) ?? 0;
+  }
+
+  static #normaliseProjectName(projectName) {
+    if (typeof projectName !== 'string') {
+      return null;
+    }
+    const name = projectName.trim();
+    return name === '' ? null : name;
+  }
+
+  static #isValidDuration(duration) {
+    return (
+      typeof duration === 'number' &&
+      Number.isFinite(duration) &&
+      duration > 0 &&
+      Number.isInteger(duration / TIME_UNIT_HOURS)
+    );
   }
 }
 

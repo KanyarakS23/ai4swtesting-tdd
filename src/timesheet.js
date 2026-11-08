@@ -1,7 +1,14 @@
-   class Timesheet {
-     submitTimesheet(projectName, duration) {
-       return true;
-     }
-   }
+class Timesheet {
+  timesheets = new Map();
 
-   module.exports = Timesheet;
+  submitTimesheet(projectName, duration) {
+    this.timesheets.set(projectName, duration);
+    return true;
+  }
+
+  getTimesheets() {
+    return [...this.timesheets.values()];
+  }
+}
+
+module.exports = Timesheet;
